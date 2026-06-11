@@ -1,0 +1,468 @@
+bash
+cat > /mnt/user-data/outputs/index.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>피복아크 용접기능사 필기 합격 가이드</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#f1f5f9;min-height:100vh}
+  header{background:linear-gradient(135deg,#1e3a5f 0%,#2d6a9f 100%);color:#fff;padding:20px 16px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.3)}
+  header .sub{font-size:12px;opacity:.8;margin-bottom:4px}
+  header h1{font-size:20px;font-weight:900;letter-spacing:-.5px}
+  header .desc{margin-top:6px;font-size:12px;opacity:.9}
+  header .desc span{color:#ffd700;font-weight:700}
+  .nav{margin-top:12px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+  .nav-btn{padding:6px 11px;border-radius:20px;border:none;cursor:pointer;font-size:11px;font-weight:700;background:rgba(255,255,255,0.2);color:#fff;transition:all .2s}
+  .nav-btn.active{background:#fff;color:#1e3a5f}
+  .container{max-width:760px;margin:0 auto;padding:14px}
+  .section-header{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+  .section-header .emoji{font-size:22px}
+  .section-header .title{font-size:15px;font-weight:800}
+  .section-header .count{font-size:11px;color:#888;margin-top:2px}
+  .card{background:#fff;border-radius:12px;margin-bottom:8px;border:1px solid #e2e8f0;overflow:hidden;transition:border-color .2s}
+  .card.open{border-width:1.5px}
+  .card-head{padding:14px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;user-select:none}
+  .card-freq{font-size:11px;font-weight:700;margin-bottom:3px}
+  .card-q{font-size:14px;font-weight:700;color:#1e293b;line-height:1.5}
+  .card-arrow{color:#94a3b8;font-size:14px;flex-shrink:0;margin-top:2px;transition:transform .2s}
+  .card-arrow.open{transform:rotate(180deg)}
+  .card-body{border-top:1px solid #e2e8f0;padding:14px;display:none}
+  .card-body.open{display:block}
+  .card-a{font-size:14px;font-weight:700;line-height:1.6;margin-bottom:8px}
+  .card-tip{font-size:12px;color:#64748b;background:#f8fafc;border-radius:8px;padding:10px 12px;border-left:3px solid #e2e8f0;line-height:1.6}
+  /* Quiz */
+  .quiz-wrap{background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+  .quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:13px;color:#666}
+  .quiz-score{font-weight:700;color:#1d4ed8}
+  .quiz-q{background:#f0f9ff;border-radius:12px;padding:18px;margin-bottom:14px;font-size:15px;font-weight:700;color:#1e3a5f;line-height:1.6}
+  .quiz-a{background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:12px;font-size:15px;font-weight:700;color:#15803d;display:none}
+  .quiz-a.show{display:block}
+  .btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s}
+  .btn:hover{opacity:.9}
+  .btn-primary{background:#1d4ed8;color:#fff}
+  .btn-success{background:#15803d;color:#fff}
+  .btn-danger{background:#dc2626;color:#fff}
+  .btn-light{background:#f1f5f9;color:#555;font-size:13px}
+  .btn-row{display:flex;gap:8px;margin-bottom:8px}
+  .btn-row .btn{flex:1}
+  .progress{height:6px;background:#e2e8f0;border-radius:3px;margin-bottom:16px;overflow:hidden}
+  .progress-bar{height:100%;background:#1d4ed8;border-radius:3px;transition:width .3s}
+  /* Score bar */
+  .score-box{background:#fff;border-radius:12px;padding:14px;margin-top:10px;border:1px solid #e2e8f0}
+  .score-box .label{font-size:13px;font-weight:700;color:#374151;margin-bottom:10px}
+  .score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+  .score-cell{text-align:center;background:#f8fafc;border-radius:8px;padding:10px 4px}
+  .score-cell .s-label{font-size:10px;color:#888;margin-bottom:2px}
+  .score-cell .s-val{font-size:16px;font-weight:900}
+  .score-cell .s-pts{font-size:10px;color:#888}
+  .pass-bar{text-align:center;background:linear-gradient(135deg,#1e3a5f,#2d6a9f);border-radius:8px;padding:10px;color:#fff}
+  .pass-bar .pass-num{font-size:18px;font-weight:900;color:#ffd700}
+  /* Strategy cards */
+  .strat-card{background:#fff;border-radius:12px;margin-bottom:8px;border:1px solid #e2e8f0;overflow:hidden}
+  .strat-head{padding:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .strat-badge{display:inline-block;background:#fef3c7;color:#b45309;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;margin-bottom:4px}
+  .strat-q{font-size:14px;font-weight:700;color:#1e293b;line-height:1.5}
+  .strat-body{display:none;padding:14px;border-top:1px solid #fde68a;background:#fffbeb}
+  .strat-body.open{display:block}
+  .strat-a{font-size:13px;font-weight:600;color:#b45309;line-height:1.7;white-space:pre-line;margin-bottom:8px}
+  .strat-tip{font-size:12px;color:#64748b;background:#fff;border-radius:8px;padding:10px 12px;border-left:3px solid #fcd34d;line-height:1.6}
+  /* hidden utility */
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="sub">🔥 18일 완성 합격 전략서</div>
+  <h1>피복아크 용접기능사 필기</h1>
+  <div class="desc">60문제 중 <span>36개(60점)</span> 이상 목표 달성 가이드</div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showSection(0,this)">🔥 TOP20</button>
+    <button class="nav-btn" onclick="showSection(1,this)">📚 용접일반</button>
+    <button class="nav-btn" onclick="showSection(2,this)">⚙️ 용접재료</button>
+    <button class="nav-btn" onclick="showSection(3,this)">📐 기계제도</button>
+    <button class="nav-btn" onclick="showSection(4,this)">🎯 전략</button>
+    <button class="nav-btn" onclick="showQuiz(this)">⚡ 퀴즈</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ===== SECTION 0: TOP 20 ===== -->
+  <div id="sec0">
+    <div class="section-header" style="border:2px solid #fca5a5">
+      <span class="emoji">🔥</span>
+      <div>
+        <div class="title" style="color:#dc2626">초빈출 TOP 20 — 반드시 암기</div>
+        <div class="count">20개 항목 · 탭을 눌러 정답+해설 확인</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 1: 용접일반 ===== -->
+  <div id="sec1" class="hidden">
+    <div class="section-header" style="border:2px solid #93c5fd">
+      <span class="emoji">📚</span>
+      <div>
+        <div class="title" style="color:#1d4ed8">고빈출 핵심 — 1과목: 용접일반</div>
+        <div class="count">16개 항목 · 탭을 눌러 정답+해설 확인</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2: 용접재료 ===== -->
+  <div id="sec2" class="hidden">
+    <div class="section-header" style="border:2px solid #86efac">
+      <span class="emoji">⚙️</span>
+      <div>
+        <div class="title" style="color:#15803d">고빈출 핵심 — 2과목: 용접재료</div>
+        <div class="count">14개 항목 · 탭을 눌러 정답+해설 확인</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: 기계제도 ===== -->
+  <div id="sec3" class="hidden">
+    <div class="section-header" style="border:2px solid #c4b5fd">
+      <span class="emoji">📐</span>
+      <div>
+        <div class="title" style="color:#7c3aed">고빈출 핵심 — 3과목: 기계제도</div>
+        <div class="count">11개 항목 · 탭을 눌러 정답+해설 확인</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4: 전략 ===== -->
+  <div id="sec4" class="hidden">
+    <div class="section-header" style="border:2px solid #fcd34d">
+      <span class="emoji">🎯</span>
+      <div>
+        <div class="title" style="color:#b45309">합격 전략 &amp; 18일 플랜</div>
+        <div class="count">5개 전략 카드</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== QUIZ ===== -->
+  <div id="secQuiz" class="hidden">
+    <div class="quiz-wrap">
+      <div class="quiz-meta">
+        <span id="qPos">문제 1 / 15</span>
+        <span class="quiz-score" id="qScore">정답: 0/0</span>
+      </div>
+      <div class="progress"><div class="progress-bar" id="qBar" style="width:6.6%"></div></div>
+      <div class="quiz-q" id="qQuestion"></div>
+      <div class="quiz-a" id="qAnswer"></div>
+      <button class="btn btn-primary" id="qRevealBtn" onclick="revealAnswer()">정답 보기</button>
+      <div class="btn-row hidden" id="qBtnRow">
+        <button class="btn btn-success" onclick="markAnswer(true)">✅ 알았어요</button>
+        <button class="btn btn-danger" onclick="markAnswer(false)">❌ 몰랐어요</button>
+      </div>
+      <button class="btn btn-light" style="margin-top:8px" onclick="resetQuiz()">↺ 처음부터 다시</button>
+    </div>
+  </div>
+
+  <!-- Score bar (shown in non-quiz sections) -->
+  <div id="scoreBar" class="score-box">
+    <div class="label">📊 과목별 목표 점수</div>
+    <div class="score-grid">
+      <div class="score-cell"><div class="s-label">1과목(35문)</div><div class="s-val" style="color:#1d4ed8">22개↑</div><div class="s-pts">≈37점</div></div>
+      <div class="score-cell"><div class="s-label">2과목(15문)</div><div class="s-val" style="color:#15803d">8개↑</div><div class="s-pts">≈13점</div></div>
+      <div class="score-cell"><div class="s-label">3과목(10문)</div><div class="s-val" style="color:#7c3aed">6개↑</div><div class="s-pts">≈10점</div></div>
+    </div>
+    <div class="pass-bar">합산 목표: <span class="pass-num">36개 이상 = 합격! 🎉</span></div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ─── DATA ───────────────────────────────────────────────
+const DATA = {
+  sections: [
+    {
+      id: 0,
+      color: "#dc2626",
+      bg: "#fef2f2",
+      border: "#fca5a5",
+      items: [
+        {q:"피복 아크 용접봉 E4316의 피복제 계통은?",a:"저수소계",tip:"E43□□에서 마지막 숫자 6 = 저수소계. 균열 방지, 두꺼운 판, 건조 300~350℃ 2시간. E4301=일미나이트, E4311=고셀룰로오스, E4313=고산화티탄",freq:"★★★★★"},
+        {q:"직류 정극성(DCSP) vs 역극성(DCRP) 특징은?",a:"정극성: 모재(+), 홀더(-), 용입 깊고 비드 좁음, 후판 용접\n역극성: 모재(-), 홀더(+), 비드 넓고 용입 얕음, 박판·주철·고탄소강",tip:"모재쪽이 (+)극이면 열 70% 받아 용입 깊어짐. 역극성은 반대로 봉이 빨리 녹음",freq:"★★★★★"},
+        {q:"아크 쏠림(Arc Blow) 방지법은?",a:"① 교류 용접기 사용(가장 효과적)\n② 아크 짧게 유지\n③ 접지점 2개 이상, 용접부에서 멀리\n④ 후진법 사용\n⑤ 엔드탭 사용",tip:"아크 쏠림은 직류에서만 발생. 교류로 바꾸는 것이 근본 해결책",freq:"★★★★★"},
+        {q:"언더컷 vs 오버랩 발생 원인은?",a:"언더컷: 전류 과대 / 아크 길이 너무 길 때 / 용접 속도 빠를 때\n오버랩: 전류 과소 / 용접 속도 느릴 때 / 봉 각도 부적당",tip:"언더컷=모재가 파임, 오버랩=용착금속이 모재 위에 겹쳐 넘침",freq:"★★★★★"},
+        {q:"서브머지드 아크 용접(잠호 용접)의 다른 이름은?",a:"잠호 용접 / 링컨 용접 / 유니언 멜트 용접 / 불가시 아크 용접",tip:"아크가 용제 속에 잠겨 보이지 않음. 아래보기·수평필릿 자세만 가능. 10~20배 빠름",freq:"★★★★★"},
+        {q:"용접 입열 공식은?",a:"H = 60EI / V (J/cm)\nE=아크전압(V), I=전류(A), V=용접속도(cm/min)",tip:"모재에 흡수되는 열량은 입열의 75~85%. 입열↑ → 냉각속도↓, 용입↑",freq:"★★★★★"},
+        {q:"가스 용접봉 지름 공식은?",a:"D = T/2 + 1 (mm)\nT = 모재 판두께(mm)",tip:"판두께 3.2mm → D = 3.2/2+1 = 2.6mm\n판두께 4.4mm → D = 4.4/2+1 = 3.2mm",freq:"★★★★★"},
+        {q:"산소·아세틸렌 용기 충전 압력은?",a:"산소: 35℃에서 150kgf/cm²\n아세틸렌: 15℃에서 15kgf/cm²",tip:"산소량(L) = 내용적(L) × 최고충전압력. 예: 40.7L × 150 = 6,105L",freq:"★★★★★"},
+        {q:"아세틸렌 각종 액체 용해 배수는?",a:"석유 2배 / 벤젠 4배 / 알코올 6배 / 아세톤 25배",tip:"아세틸렌 가스량 C = 905×(A-B) L\nA=실병 무게, B=공병 무게, 905=1kg당 용적(L)",freq:"★★★★★"},
+        {q:"TIG vs MIG 용접 비교는?",a:"TIG: 비소모식(비용극식), 텅스텐 전극, 직류정극성 기본, 알루미늄=교류\nMIG: 소모식(용극식), 직류역극성, 전류밀도 높음(피복아크의 6배)",tip:"TIG 토치: 100A 미만=공냉식, 100A 이상=수냉식\nMIG 와이어 송급: 푸시식/풀식/푸시-풀식",freq:"★★★★★"},
+        {q:"사용률·허용사용률 공식은?",a:"사용률 = 아크발생시간/(아크+휴식시간) × 100%\n허용사용률 = (정격전류/실제전류)² × 정격사용률",tip:"예: 정격300A, 정격사용률40%, 실제200A 사용 시\n허용사용률 = (300/200)² × 40 = 90%",freq:"★★★★★"},
+        {q:"저수소계 용접봉(E4316) 건조 조건은?",a:"300~350℃에서 1~2시간 건조 후 사용",tip:"일반봉: 70~100℃, 30분~1시간\n저수소계는 수소량이 다른 봉 대비 1/10 수준으로 적음",freq:"★★★★★"},
+        {q:"가스 절단 표준 드래그 길이는?",a:"판 두께의 1/5 (약 20%)\n예: 25mm 판 → 드래그 5mm",tip:"예열불꽃 너무 강하면: 절단면 거칠고 모서리 둥굴어짐, 드래그 증가\n예열불꽃 약하면: 역화 발생, 절단 중단",freq:"★★★★★"},
+        {q:"테르밋 용접의 특징은?",a:"산화철(3~4) + 알루미늄(1) → 반응열 2800℃ 이용\n전기 불필요, 레일·차축 용접에 사용, 용접시간 짧음, 변형 적음",tip:"점화제: 과산화바륨+알루미늄 혼합분말. 테르밋 반응 후 용융 금속이 용가재",freq:"★★★★★"},
+        {q:"전류가 인체에 미치는 영향은?",a:"1mA: 반응 느낌\n15~20mA: 근육 마비, 움직이지 않음\n50~100mA: 순간 사망 위험\n100~200mA: 즉사",tip:"감전 위험 전압: 교류 50V, 직류 120V 이상\n전격방지기 무부하 전압: 20~30V 이하",freq:"★★★★★"},
+        {q:"CO₂ 용접 작업장 위험 농도는?",a:"15% 이상이면 인체에 위험\n3~4%: 두통·뇌빈혈",tip:"CO₂ 비중: 1.53(공기보다 무거워 바닥에 가라앉음)\n풍속 1~2m/s 이상이면 바람막이 필요",freq:"★★★★★"},
+        {q:"역화·역류 발생 시 조치는?",a:"역화(인화) 발생: 아세틸렌 밸브 먼저 잠금\n역류 발생: 산소 밸브 먼저 잠금",tip:"역류: 팁 막혀 고압산소가 아세틸렌 호스 역방향으로 흐름\n인화: 팁 막혀 불꽃이 혼합실까지 밀려 들어가는 현상",freq:"★★★★★"},
+        {q:"18-8 스테인리스강(STS304) 특징은?",a:"Cr 18% + Ni 8% / 오스테나이트계 / 비자성체 / 면심입방격자\n입계부식 발생 가능 / 예열 금지 / 담금질 불가",tip:"입계부식 방지: 탄소량 줄이기, Ti·Nb 소량 첨가, 1000℃ 이상 급냉(고용화 처리)",freq:"★★★★★"},
+        {q:"불변강(Ni-Fe 합금) 종류는?",a:"인바(Ni 36%): 길이 불변, 줄자·정밀계측\n엘린바(Ni36%+Cr12%): 탄성 불변, 시계부품\n슈퍼인바(Ni29~40%+Co5%)",tip:"스텔라이트(Co-Cr-W)는 불변강 아님 → 주조경질합금\n플래티나이트(Ni42~46%): 전구·진공관 도선용",freq:"★★★★★"},
+        {q:"금속 원자 결합 인력 범위는?",a:"10⁻⁸ cm = 1 옹스트롱(Å)",tip:"용접의 원리: 두 금속을 10⁻⁸cm까지 접근시키면 원자 간 인력으로 자연 결합됨",freq:"★★★★★"}
+      ]
+    },
+    {
+      id: 1,
+      color: "#1d4ed8",
+      bg: "#eff6ff",
+      border: "#93c5fd",
+      items: [
+        {q:"용접 3대 분류는?",a:"융접: 모재+용접봉 모두 녹음\n압접: 모재만 반용융 + 압력\n납땜: 모재 안 녹음, 땜납만 녹음",tip:"야금적 접합: 융접·압접·납땜\n기계적 접합: 볼트·리벳·코터·나사(이것들은 용접이 아님)",freq:"★★★★"},
+        {q:"교류 vs 직류 용접기 비교는?",a:"교류: 구조 간단, 가격 싸다, 무부하전압 높음, 아크 불안정, 아크쏠림 없음, 감전 위험 많음\n직류: 아크 안정, 극성 조절 가능, 비피복봉 사용 가능",tip:"가포화 리액터형: 원격 조정 가능\n탭 전환형: 용접 중 전류 조정 금지(탭 소손됨)\n가동철심형: 현재 가장 많이 사용",freq:"★★★★"},
+        {q:"전격방지기와 용접기 부속장치는?",a:"전격방지기: 무부하전압 20~30V 이하 유지\n핫 스타트: 아크 초기 전류를 강하게\n고주파 발생장치: 비접촉 아크 발생\n원격 제어장치: 가포화 리액터형에서 사용",tip:"차광유리 번호: 가스용접 4~8번, 전기용접 11번, CO₂ 12~13번, TIG 13~14번",freq:"★★★★"},
+        {q:"피복제 7대 역할과 성분은?",a:"역할: ①아크 안정 ②산화·질화 방지 ③용적 미세화 ④탈산 정련 ⑤합금원소 첨가 ⑥급냉 방지 ⑦절연\n아크안정제: 산화티탄, 탄산바륨\n탈산제: 페로망간, 페로실리콘, 알루미늄\n고착제: 규산나트륨(물유리), 규산칼륨",tip:"가스발생제: 셀룰로오스, 전분, 톱밥\n슬래그생성제: 석회석, 일미나이트, 형석",freq:"★★★★"},
+        {q:"용접봉 기호 E4301~E4316 계통 정리는?",a:"E4301: 일미나이트계 (슬래그생성식)\nE4311: 고셀룰로오스계 (가스발생식)\nE4313: 고산화티탄계 (반가스발생식)\nE4316: 저수소계 (슬래그생성식)",tip:"E43□□ 읽는 법: E=전기용접봉, 43=최소인장강도(kgf/mm²), 세번째=용접자세(0·1=전자세), 네번째=피복제계통",freq:"★★★★"},
+        {q:"용착법 종류와 순서 암기법은?",a:"전진법: 1→2→3→4→5\n후진법: 5→4→3→2→1\n대칭법: 4→2→1→3\n비석법: 1→4→2→5→3\n교호법: 1→4→3→5→2",tip:"다층: 덧살올림법(한냉·구속 클 때 사용)\n캐스케이드법(계단식)\n전진블록법(1층 균열 우려 시)",freq:"★★★★"},
+        {q:"CO₂ 용접의 특징과 와이어는?",a:"특징: 용착금속 기계적 성질 우수, 전류밀도 높아 용입 깊음, 피복아크의 4~20배 속도\n솔리드 와이어 / 복합(플럭스) 와이어\n풍속 1~2m/s 이상 시 바람막이 필요",tip:"복합 와이어 종류: 아코스아크, 퓨즈아크, NCG, 유니언 → 스패터 적고 비드 아름다움",freq:"★★★★"},
+        {q:"스터드 용접 페룰(Ferrule) 역할은?",a:"① 아크 보호 (아크 안정)\n② 용융금속 유출 방지\n③ 산화 방지\n④ 용착부 오염 방지",tip:"페룰=내열성 도기 재질. 너깃=볼트 열영향부의 용융 응고된 금속 부분",freq:"★★★★"},
+        {q:"일렉트로 슬래그 vs 일렉트로 가스 용접은?",a:"슬래그: 저항열 이용, 최대 150mm 두께 단층 용접, 수냉 동판 사용, 홈 간격 12~16mm\n가스: CO₂ 실드 + 아크열 이용, 조선·탱크에 사용",tip:"일렉트로 슬래그: 아크 없이 용융슬래그 저항열만 이용 → 와이어 지름 2.5~3mm",freq:"★★★★"},
+        {q:"예열 목적과 온도는?",a:"목적: 균열 방지, 수축변형·잔류응력 감소, 연성·인성 향상, 냉각속도 느리게\n알루미늄·구리: 200~300℃\n고장력강·합금강: 50~250℃\n연강(0℃이하): 40~75℃",tip:"예열은 용접 전 실시. 후열처리와 다름. 저수소계 사용도 균열 방지에 효과적",freq:"★★★★"},
+        {q:"잔류응력 제거법 5가지는?",a:"① 노내 풀림법: 전체 가열로 처리\n② 국부 풀림법: 용접부 주변만 가열 후 서냉\n③ 저온응력 완화법: 양측 150mm를 150~200℃로 가열 후 수냉\n④ 기계적 응력 완화법: 소성변형 후 하중 제거\n⑤ 피닝법: 둥근 해머로 가볍게 두드림(1층은 균열 위험으로 제한)",tip:"가장 효과적인 방법: 노내 풀림법. 저온응력 완화법=가스불꽃으로 용접선 양측 처리",freq:"★★★★"},
+        {q:"변형 교정법(박판 점 수축법)은?",a:"가열온도: 500~600℃\n가열시간: 약 30초\n가열점 지름: 20~30mm\n→ 즉시 수냉",tip:"역변형법(용접 전), 대칭법·후진법·비석법(용접 중), 피닝법·가열법(용접 후)",freq:"★★★★"},
+        {q:"화재 분류와 소화기 적용은?",a:"A급=일반화재(포말·분말·CO₂)\nB급=유류화재(포말·분말·CO₂)\nC급=전기화재(CO₂·분말·할로겐) → 포말 사용 불가!\nD급=금속화재",tip:"전기화재(C급)에 포말소화기 절대 사용 금지 → 감전 위험",freq:"★★★★"},
+        {q:"아크 에어 가우징 특징은?",a:"전원: 직류 역극성(DCRP)\n전압: 35~45V\n압축공기 압력: 5~7kgf/cm²\n사용: 결함 제거, 홈 파기, 뒷면 따내기",tip:"탄소봉에 아크→모재 용융→압축공기로 불어냄. 철·비철·콘크리트 모두 사용 가능",freq:"★★★★"},
+        {q:"가스 절단 팁 종류와 수중 절단은?",a:"동심형(프랑스식): 전·후·좌·우·곡선 자유 절단\n이심형(독일식): 직선 절단에 능률적\n수중 절단 연료가스: 수소(H₂) 사용, 가스량 지상의 4~8배",tip:"스카핑: 표면 탈탄층·결함 제거 위해 얇게 타원형으로 깎는 법\n가스 가우징: U·H형 홈 파기",freq:"★★★★"},
+        {q:"용접 이음효율·인장응력 공식은?",a:"이음효율 = 용접시험편 인장강도/모재 인장강도 × 100%\n인장응력 = 하중(P)/단면적(A)\n허용응력 = 인장강도/안전율",tip:"안전율: 정하중=3, 반복하중=5, 교번하중=8, 충격하중=12",freq:"★★★★"}
+      ]
+    },
+    {
+      id: 2,
+      color: "#15803d",
+      bg: "#f0fdf4",
+      border: "#86efac",
+      items: [
+        {q:"담금질 조직 경도 순서는?",a:"시멘타이트 > 마텐자이트 > 트루스타이트 > 솔바이트 > 펄라이트 > 오스테나이트 > 페라이트",tip:"냉각속도: 소금물>물>기름>공기>노 냉각\n담금질=경도 증가, 뜨임=취성 제거+인성 증가, 풀림=연화+잔류응력 제거, 불림=조직 균일화",freq:"★★★★★"},
+        {q:"탄소강 표준 조직 vs 담금질 조직은?",a:"표준(평형)조직: 페라이트, 펄라이트, 시멘타이트\n담금질 조직: 마텐자이트(수랭), 트루스타이트(유랭), 솔바이트(공랭)",tip:"마텐자이트=담금질로만 얻음. 노말라이징(불림): A₃+30~50℃ 가열 → 공랭",freq:"★★★★★"},
+        {q:"결정 격자 3종류와 해당 금속은?",a:"BCC(체심입방): Fe(α·δ), Cr, W, Mo, V → 강하고 단단\nFCC(면심입방): Al, Au, Cu, Ni, Pb → 전연성 좋음\nHCP(조밀육방): Mg, Zn, Ti, Cd → 가공성 나쁨",tip:"FCC는 연성이 커서 가공하기 좋음. BCC는 전위 이동이 어려워 경도 높음",freq:"★★★★★"},
+        {q:"황동(Cu-Zn) 합금 종류 정리는?",a:"7:3 황동: 연신율 최대, 탄피·판재\n6:4 황동(문쯔메탈): 인장강도 최대\n톰백(Zn 8~20%): 금 대용품, 장식\n애드미럴티=7:3+Sn1% / 네이벌=6:4+Sn1% / 델타(철황동)=6:4+Fe1~2%",tip:"황동 결점: 자연균열(암모니아 접촉), 탈아연부식(해수), 경년변화",freq:"★★★★★"},
+        {q:"알루미늄 합금 종류와 용도는?",a:"두랄루민(Al+Cu+Mg+Mn): 항공기 구조재, 인장강도 30~45kgf/mm²\n실루민(Al+Si): 주조성 좋음, 절삭성 나쁨\n하이드로날륨(Al+Mg): 내식성 최대, 선박·화학\nY합금(Al+Cu+Ni+Mg): 내열용, 내연기관",tip:"로엑스=Al+Si+Cu+Mg+Ni, 피스톤용(열팽창 극히 작음)\n라우탈=Al+Cu+Si, 주조·절삭성 둘 다 향상",freq:"★★★★★"},
+        {q:"철강 취성(메짐) 종류와 원인·방지는?",a:"적열취성(900℃↑): S(황)이 원인 → Mn(망간)으로 방지\n청열취성(200~300℃): P(인)이 원인\n저온취성(0℃↓): Mo(몰리브덴)으로 방지\n수소취성: H₂, 헤어크랙(백점) 원인",tip:"적열취성=황화철(FeS) 형성. Mn 첨가하면 MnS로 바뀌어 무해함",freq:"★★★★★"},
+        {q:"금속 표면 침투법(표면경화)은?",a:"세라다이징: Zn(아연) 침투\n크로마이징: Cr(크롬) 침투\n칼로라이징: Al(알루미늄) 침투\n실리코나이징: Si(규소) 침투\n보로나이징: B(붕소) 침투",tip:"질화법(암모니아 NH₃): 표면 경도 최대, 담금질 불필요, 변형 적음\n침탄법: 탄소 침투, 고체·액체·가스 침탄법",freq:"★★★★★"},
+        {q:"구리(Cu) 기본 성질은?",a:"용융점: 1083℃ / 비중: 8.9 / 결정구조: FCC\n전기전도율: 은 다음 2위\n열전도율: 은>구리>금>알루미늄",tip:"전해인성동: 400℃ 이상 사용 금지(수소취성 발생)\n무산소동: 산소·탈산제 없음, 수소취성 없음",freq:"★★★★"},
+        {q:"주철 성장 원인과 특성은?",a:"성장 원인: ①Fe₃C 흑연화 팽창 ②불균일 가열로 균열 ③Si 산화 팽창 ④A₁변태 체적변화\n흑연화 촉진: Si, Ni, Ti, Al / 방지: Mo, S, Cr, V, Mn",tip:"주철 탄소: 2.11~6.68%. 비중 7.1~7.3. 압축강도 큼, 인장강도 작음, 취성 큼",freq:"★★★★"},
+        {q:"스테인리스강 3계통 비교는?",a:"오스테나이트계(18-8): 비자성, 예열금지, 담금질 불가, 입계부식\n페라이트계(Cr13형): 자성 있음, 담금질하면 마텐자이트로 변태\n마텐자이트계: 자성, 용접성 나쁨, 예열 필요",tip:"오스테나이트계 입계부식 방지: 탄소 줄이기, Ti·Nb 첨가, 고용화 처리(1000℃↑ 급냉)",freq:"★★★★"},
+        {q:"고속도강과 공구용 합금강은?",a:"고속도강(SKH): 18W-4Cr-1V (탄소 0.8%)\n스텔라이트: Co-Cr-W (주조경질합금, 하드페이싱에 사용)\n초경합금: WC+TiC+TaC (분말야금, 가장 경도 높음)",tip:"칠드주철: 금형에 냉금 삽입→표면 급랭→백주철화\n가단주철: 백주철 풀림→탈탄 또는 흑연화",freq:"★★★★"},
+        {q:"마우러 조직도와 주철 조직도는?",a:"마우러 조직도: 주철에서 C와 Si 함량에 따른 조직 관계 표시",tip:"C+Si 많을수록 회주철(흑연 많음), 적을수록 백주철(시멘타이트 많음)\n구상흑연주철: Mg·Ce 첨가, 불스아이(bull's eye) 조직",freq:"★★★★"},
+        {q:"납땜 종류와 구분 온도는?",a:"450℃ 기준:\n이하=연납땜: 주석납(Sn+Pb, 대표), 카드뮴납\n이상=경납땜: 은납(Ag+Cu+Zn, 가장 우수), 황동납(Cu+Zn), 인동납(Cu+Ag+P, 구리합금용)",tip:"연납용 용제: 송진(부식 없음), 염산, 염화아연\n경납용 용제: 붕사, 붕산, 불화물",freq:"★★★★"},
+        {q:"하드필드강과 구조용 합금강은?",a:"하드필드강(Mn강): Mn 10~14%, 내마모성 최대, 광산기계·레일 교차점, 상온에서 오스테나이트 유지\nNi-Cr강: 가장 널리 쓰이는 구조용강\nNi-Cr-Mo강: 가장 우수한 구조용강",tip:"크로만실(Cr-Mn-Si강): 철도·자동차용 차축. 인바·엘린바는 불변강(Ni-Fe 합금)",freq:"★★★★"}
+      ]
+    },
+    {
+      id: 3,
+      color: "#7c3aed",
+      bg: "#f5f3ff",
+      border: "#c4b5fd",
+      items: [
+        {q:"선이 겹칠 때 우선순위는?",a:"외형선 > 숨은선 > 절단선 > 중심선 > 무게중심선 > 치수보조선",tip:"선 굵기 비율: 아주굵은선 : 굵은선 : 가는선 = 4:2:1\n외형선=굵은실선, 숨은선=가는파선, 중심선=가는1점쇄선",freq:"★★★★★"},
+        {q:"제3각법 투상도 배치는?",a:"정면도 기준:\n위=평면도 / 아래=저면도\n우측=우측면도 / 좌측=좌측면도\n정면도 우측 너머=배면도",tip:"제1각법은 반대: 평면도=아래, 우측면도=좌측\n한국·미국=제3각법. 원리: 눈→투상면→물체",freq:"★★★★★"},
+        {q:"치수 보조 기호 전체 정리는?",a:"Ø=지름 / R=반지름 / SR=구의 반지름 / SØ=구의 지름\nt=두께 / □=정사각형 변의 길이 / C=45°모떼기\n( )=참고치수 / 이론적 정확치수=사각형 테두리",tip:"참고치수는 괄호 ()로 표시. NS=비례척 아님(임의의 척도)",freq:"★★★★★"},
+        {q:"단면도 종류 4가지는?",a:"전(온)단면도: 물체 1/2 절단\n반(한쪽)단면도: 물체 1/4 절단(대칭물체)\n부분단면도: 파단선 경계로 일부만 절단\n회전도시단면도: 절단 후 90° 회전 표시(핸들·암 등)",tip:"계단단면도: 계단 모양으로 절단\n해칭: 45° 가는실선으로 표시",freq:"★★★★★"},
+        {q:"전개도법 3종류는?",a:"평행선법: 각기둥·원기둥 전개\n방사선법: 각뿔·원뿔 전개(꼭지점 중심으로 방사형)\n삼각형법: 꼭지점 먼 원뿔·편심원뿔·경사진 절단면",tip:"원통 경사 절단→평행선법. 각뿔·원뿔→방사선법\n두 방법 모두 곤란한 복잡한 형태→삼각형법",freq:"★★★★★"},
+        {q:"도면 크기(A 시리즈)는?",a:"A0: 841×1189 / A1: 594×841 / A2: 420×594\nA3: 297×420 / A4: 210×297",tip:"도면 접을 때: A4 크기로, 표제란이 겉으로 나오게 접기\n도면 길이 단위: mm (단위기호 생략)",freq:"★★★★"},
+        {q:"선의 종류별 용도 전체 정리는?",a:"굵은실선: 외형선\n가는파선: 숨은선\n가는1점쇄선: 중심선·기준선·피치선\n가는2점쇄선: 가상선·무게중심선\n굵은1점쇄선: 특수지정선(특수가공 부분)\n가는실선: 치수선·치수보조선·지시선·해칭",tip:"파단선=불규칙한 가는실선 또는 지그재그선\n절단선=가는1점쇄선(끝부분은 굵게)",freq:"★★★★"},
+        {q:"용접 기호 기본 읽는 법은?",a:"기선(기준선) 아래=화살표쪽 용접\n기선 위=화살표 반대쪽 용접\n○(원)=전둘레 용접\n깃발 모양=현장 용접\nz3=필릿 용접 목 길이 3mm\na7=필릿 용접 목 두께 7mm",tip:"필릿=삼각형 기호 / 이면용접=반원 / 플러그=직사각형\n맞대기 V형=V / 맞대기 X형=X",freq:"★★★★"},
+        {q:"KS 재료 기호 정리는?",a:"SM: 기계구조용압연강재\nSWS/SM400C: 용접구조용압연강재\nSTK: 일반구조용탄소강관\nSTKM: 기계구조용탄소강관\nSPP: 일반배관용탄소강관\nSS400: 400=최저인장강도(N/mm²)",tip:"SK=탄소공구강 / STC=합금공구강 / SWRW=아크용접봉심선재\n'SM'+'숫자C'=기계구조용탄소강재(예:SM35C)",freq:"★★★★"},
+        {q:"척도 3종류와 표시는?",a:"축척(줄임): 1:2, 1:5, 1:10\n현척(실물): 1:1\n배척(확대): 2:1, 5:1, 10:1\n비례척 아닐 때: NS 표시",tip:"표제란에 기재. 축척 1:2인 경우 도면에 100mm로 그려도 치수기입은 200mm(실제 치수)로",freq:"★★★★"},
+        {q:"배관 도면 유체 기호·색채는?",a:"공기=A(백색) / 가스=G(황색) / 기름=O / 수증기=S(진한적색) / 물=W(청색)\nEL=관 중심 기준 높이 / GL=지표면 기준 / FL=1층 바닥 기준",tip:"표제란: 도면 오른쪽 아래, 도번·도명·척도·날짜·설계자 기재\n부품란: 품명·품번·재료·수량·무게 기재",freq:"★★★★"}
+      ]
+    },
+    {
+      id: 4,
+      color: "#b45309",
+      bg: "#fffbeb",
+      border: "#fcd34d",
+      isStrategy: true,
+      items: [
+        {q:"18일 합격 플랜",a:"1~3일: 🔥TOP20 완전암기 (하루 7개씩, 소리 내어 반복)\n4~6일: 1과목(용접일반) 16개 항목 읽기+암기\n7~9일: 2과목(용접재료) 14개 항목 읽기+암기\n10~12일: 3과목(기계제도) 11개 항목 읽기+암기\n13~15일: ⚡퀴즈 모드로 약점 파악\n16~17일: 실제 과년도 기출문제 풀기\n18일: 오답 집중 복습 + TOP20 최종 확인",tip:"매일 취침 전 TOP20을 한 번씩 읽는 습관이 가장 효과적",freq:"📌"},
+        {q:"과목별 목표 문제 수",a:"1과목 용접일반(35문항): 22개 이상 목표 → 약 37점\n2과목 용접재료(15문항): 8개 이상 목표 → 약 13점\n3과목 기계제도(10문항): 6개 이상 목표 → 약 10점\n합계: 36개 이상 = 60점 이상 = 합격",tip:"1과목 배점이 가장 크므로 1과목에서 확실히 점수 확보하는 것이 핵심 전략",freq:"📌"},
+        {q:"거의 매회 출제되는 10대 주제",a:"① E4316 저수소계 / ② 직류극성(정극성vs역극성) / ③ 아크쏠림 방지\n④ 사용률·허용사용률 공식 / ⑤ 가스용접봉 지름 공식\n⑥ 산소·아세틸렌 충전 압력 / ⑦ 인체 전류 영향\n⑧ 담금질 조직 경도 순서 / ⑨ 18-8 스테인리스\n⑩ 선의 우선순위(기계제도)",tip:"이 10개 주제에서 최소 10~12문제 출제됨. 완벽 암기 시 점수의 30% 확보 가능",freq:"📌"},
+        {q:"자주 헷갈리는 것들 비교 정리",a:"정극성(DCSP): 모재(+), 홀더(-), 용입 깊음, 후판\n역극성(DCRP): 모재(-), 홀더(+), 용입 얕음, 박판\n\n역화→아세틸렌 밸브 먼저 / 역류→산소 밸브 먼저\n\n언더컷→전류 과대 / 오버랩→전류 과소\n\n칼로라이징=Al 침투 / 크로마이징=Cr 침투 / 세라다이징=Zn 침투\n\n인바=길이 불변 / 엘린바=탄성 불변",tip:"혼동 포인트들을 별도로 적어두고 시험 전날 집중 복습",freq:"📌"},
+        {q:"기계제도 빠른 득점 전략",a:"투상도(제3각법 배치) → 평면도=위, 우측면도=오른쪽\n전개도법 → 원기둥=평행선, 원뿔=방사선\n선 종류 → 숨은선=가는파선, 중심선=가는1점쇄선\n치수기호 → Ø=지름, R=반지름, t=두께, □=정사각형\n재료기호 → STK=일반구조용강관, SM400C=용접구조용\n선 우선순위 → 외형선>숨은선>절단선>중심선",tip:"10문제 중 6개만 맞춰도 충분. 그림 문제는 실제 기출문제지 보며 연습 필수",freq:"📌"}
+      ]
+    }
+  ],
+
+  quiz: [
+    {q:"E4316 피복제 계통은?", a:"저수소계"},
+    {q:"직류 정극성(DCSP)에서 모재 극성은?", a:"양극(+) — 용입 깊고 비드 좁음"},
+    {q:"아세틸렌 가스가 아세톤에 몇 배 용해되나?", a:"25배"},
+    {q:"산소 용기 충전 압력(35℃)은?", a:"150kgf/cm²"},
+    {q:"용접 입열 공식은?", a:"H = 60EI/V (J/cm)"},
+    {q:"인체에 순간 사망 위험 전류는?", a:"50~100mA"},
+    {q:"가스 절단 표준 드래그 길이는?", a:"판 두께의 1/5"},
+    {q:"CO₂ 용접 작업장 위험 농도는?", a:"15% 이상"},
+    {q:"7:3 황동의 특성은?", a:"연신율 최대"},
+    {q:"18-8 스테인리스강 조직은?", a:"오스테나이트계 (비자성체)"},
+    {q:"담금질 조직 중 경도 1위는?", a:"마텐자이트"},
+    {q:"칼로라이징에서 침투시키는 원소는?", a:"알루미늄(Al)"},
+    {q:"제3각법에서 평면도 위치는?", a:"정면도 위"},
+    {q:"원뿔 전개에 사용하는 전개도법은?", a:"방사선법"},
+    {q:"숨은선에 사용하는 선 종류는?", a:"가는 파선"},
+    {q:"가스 용접봉 지름 공식은?", a:"D = T/2 + 1"},
+    {q:"역화 발생 시 먼저 잠그는 밸브는?", a:"아세틸렌 밸브"},
+    {q:"저수소계 용접봉 건조 온도는?", a:"300~350℃, 1~2시간"},
+    {q:"전격방지기 무부하 전압은?", a:"20~30V 이하"},
+    {q:"서브머지드 아크 용접의 다른 이름은?", a:"잠호 용접 / 링컨 용접"}
+  ]
+};
+
+// ─── STATE ───────────────────────────────────────────────
+let currentSection = 0;
+let quizIndex = 0;
+let quizScore = {correct: 0, total: 0};
+let answerShown = false;
+
+// ─── RENDER ──────────────────────────────────────────────
+function renderSection(idx) {
+  const sec = DATA.sections[idx];
+  const container = document.getElementById('sec' + idx);
+  // Remove old cards
+  const oldCards = container.querySelectorAll('.card, .strat-card');
+  oldCards.forEach(c => c.remove());
+
+  sec.items.forEach((item, i) => {
+    if (sec.isStrategy) {
+      const div = document.createElement('div');
+      div.className = 'strat-card';
+      div.innerHTML = `
+        <div class="strat-head" onclick="toggleStrat(this)">
+          <div style="flex:1">
+            <span class="strat-badge">${item.freq}</span>
+            <div class="strat-q">${item.q}</div>
+          </div>
+          <span style="color:#94a3b8;font-size:14px;flex-shrink:0;margin-top:2px">▼</span>
+        </div>
+        <div class="strat-body">
+          <div class="strat-a">${item.a}</div>
+          <div class="strat-tip">💡 ${item.tip}</div>
+        </div>`;
+      container.appendChild(div);
+    } else {
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.innerHTML = `
+        <div class="card-head" onclick="toggleCard(this,'${sec.color}','${sec.bg}','${sec.border}')">
+          <div style="flex:1">
+            <div class="card-freq" style="color:${sec.color}">${item.freq}</div>
+            <div class="card-q">Q. ${item.q}</div>
+          </div>
+          <span class="card-arrow">▼</span>
+        </div>
+        <div class="card-body" style="background:${sec.bg};border-top-color:${sec.border}">
+          <div class="card-a" style="color:${sec.color}">✅ ${item.a.replace(/\n/g,'<br>')}</div>
+          ${item.tip ? `<div class="card-tip" style="border-left-color:${sec.border}">💡 ${item.tip}</div>` : ''}
+        </div>`;
+      container.appendChild(div);
+    }
+  });
+}
+
+function toggleCard(head, color, bg, border) {
+  const card = head.parentElement;
+  const body = card.querySelector('.card-body');
+  const arrow = head.querySelector('.card-arrow');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  arrow.classList.toggle('open', !isOpen);
+  card.classList.toggle('open', !isOpen);
+  if (!isOpen) {
+    card.style.borderColor = border;
+    card.style.borderWidth = '1.5px';
+  } else {
+    card.style.borderColor = '#e2e8f0';
+    card.style.borderWidth = '1px';
+  }
+}
+
+function toggleStrat(head) {
+  const body = head.nextElementSibling;
+  const arrow = head.querySelector('span:last-child');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  arrow.textContent = isOpen ? '▼' : '▲';
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────
+function showSection(idx, btn) {
+  // Hide all
+  for (let i = 0; i < 5; i++) document.getElementById('sec'+i).classList.add('hidden');
+  document.getElementById('secQuiz').classList.add('hidden');
+  document.getElementById('scoreBar').classList.remove('hidden');
+  // Show selected
+  document.getElementById('sec'+idx).classList.remove('hidden');
+  currentSection = idx;
+  // Nav buttons
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function showQuiz(btn) {
+  for (let i = 0; i < 5; i++) document.getElementById('sec'+i).classList.add('hidden');
+  document.getElementById('secQuiz').classList.remove('hidden');
+  document.getElementById('scoreBar').classList.add('hidden');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  resetQuiz();
+}
+
+// ─── QUIZ ────────────────────────────────────────────────
+function loadQuizItem() {
+  const item = DATA.quiz[quizIndex];
+  document.getElementById('qQuestion').textContent = 'Q. ' + item.q;
+  document.getElementById('qAnswer').textContent = 'A. ' + item.a;
+  document.getElementById('qAnswer').classList.remove('show');
+  document.getElementById('qRevealBtn').classList.remove('hidden');
+  document.getElementById('qBtnRow').classList.add('hidden');
+  document.getElementById('qPos').textContent = `문제 ${quizIndex+1} / ${DATA.quiz.length}`;
+  document.getElementById('qScore').textContent = `정답: ${quizScore.correct}/${quizScore.total}`;
+  const pct = ((quizIndex + 1) / DATA.quiz.length * 100).toFixed(1);
+  document.getElementById('qBar').style.width = pct + '%';
+  answerShown = false;
+}
+
+function revealAnswer() {
+  document.getElementById('qAnswer').classList.add('show');
+  document.getElementById('qRevealBtn').classList.add('hidden');
+  document.getElementById('qBtnRow').classList.remove('hidden');
+  answerShown = true;
+}
+
+function markAnswer(correct) {
+  quizScore.total++;
+  if (correct) quizScore.correct++;
+  if (quizIndex < DATA.quiz.length - 1) {
+    quizIndex++;
+    loadQuizItem();
+  } else {
+    // Finished
+    const pct = Math.round(quizScore.correct / quizScore.total * 100);
+    document.getElementById('qQuestion').innerHTML = `🎉 퀴즈 완료!<br><br>${quizScore.total}문제 중 <strong style="color:#1d4ed8">${quizScore.correct}개</strong> 정답<br>(정답률 ${pct}%)`;
+    document.getElementById('qAnswer').classList.remove('show');
+    document.getElementById('qRevealBtn').classList.add('hidden');
+    document.getElementById('qBtnRow').classList.add('hidden');
+  }
+}
+
+function resetQuiz() {
+  quizIndex = 0;
+  quizScore = {correct: 0, total: 0};
+  loadQuizItem();
+}
+
+// ─── INIT ────────────────────────────────────────────────
+for (let i = 0; i < 5; i++) renderSection(i);
+loadQuizItem();
+</script>
+</body>
+</html>
+HTMLEOF
+echo "Done. Size: $(wc -c < /mnt/user-data/outputs/index.html) bytes"
